@@ -177,12 +177,11 @@ PAYLOAD_CODE static void install_testkit_activation() {
     *(uint8_t *)(kernbase + fw_offsets->testkit_patch2_addr) = 0x94;
   }
 
-  writeCr0(cr0);
-  intr_restore(flags);
-
-  // call the kernel activation function
   void (*testkit_activate)(int) = (void *)(kernbase + fw_offsets->testkit_activate_func_addr);
   testkit_activate(0);
+
+  writeCr0(cr0);
+  intr_restore(flags);
 }
 
 PAYLOAD_CODE int my_entrypoint(uint16_t fw_version_arg) {
