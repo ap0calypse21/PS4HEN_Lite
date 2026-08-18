@@ -132,6 +132,12 @@ const struct kpayload_offsets offsets_505 PAYLOAD_RDATA = {
   // Process structure offsets
   .proc_p_comm_offset = 0x44C,
   .proc_path_offset   = 0x46C,
+
+  // Testkit fake activation (not available for this firmware)
+  .testkit_check_func_addr    = 0x00000000,
+  .testkit_activate_func_addr = 0x00000000,
+  .testkit_patch1_addr        = 0x00000000,
+  .testkit_patch2_addr        = 0x00000000,
 };
 
 // clang-format on

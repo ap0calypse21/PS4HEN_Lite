@@ -132,6 +132,12 @@ const struct kpayload_offsets offsets_1300 PAYLOAD_RDATA = {
   // Process structure offsets
   .proc_p_comm_offset = 0x454,
   .proc_path_offset   = 0x474,
+
+  // Testkit fake activation (extracted from GoldHEN v2.4b18.9 via IDA)
+  .testkit_check_func_addr    = 0x26473500,
+  .testkit_activate_func_addr = 0x000361CD,
+  .testkit_patch1_addr        = 0x001D4120,
+  .testkit_patch2_addr        = 0x0062F9F0,
 };
 
 // clang-format on

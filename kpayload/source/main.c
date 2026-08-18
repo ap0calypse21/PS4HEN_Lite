@@ -151,6 +151,40 @@ PAYLOAD_CODE void resolve_kdlsym() {
   resolve(vm_map_lookup_entry);
 }
 
+PAYLOAD_CODE static void install_testkit_activation() {
+  if (!fw_offsets->testkit_check_func_addr || !fw_offsets->testkit_activate_func_addr) {
+    return;
+  }
+
+  uint64_t kernbase = getkernbase(fw_offsets->XFAST_SYSCALL_addr);
+
+  // testkit_check_func: returns nonzero if running on a testkit (TEX/DEX)
+  uint32_t (*testkit_check)(void) = (void *)(kernbase + fw_offsets->testkit_check_func_addr);
+
+  if (!testkit_check()) {
+    return; // retail unit, skip testkit activation
+  }
+
+  // testkit detected — apply fake activation patches
+  uint64_t flags = intr_disable();
+  uint64_t cr0 = readCr0();
+  writeCr0(cr0 & ~X86_CR0_WP);
+
+  if (fw_offsets->testkit_patch1_addr) {
+    *(uint8_t *)(kernbase + fw_offsets->testkit_patch1_addr) = 0x00;
+  }
+  if (fw_offsets->testkit_patch2_addr) {
+    *(uint8_t *)(kernbase + fw_offsets->testkit_patch2_addr) = 0x94;
+  }
+
+  writeCr0(cr0);
+  intr_restore(flags);
+
+  // call the kernel activation function
+  void (*testkit_activate)(int) = (void *)(kernbase + fw_offsets->testkit_activate_func_addr);
+  testkit_activate(0);
+}
+
 PAYLOAD_CODE int my_entrypoint(uint16_t fw_version_arg) {
   fw_version = fw_version_arg;
   fw_offsets = get_offsets_for_fw(fw_version);
@@ -161,6 +195,7 @@ PAYLOAD_CODE int my_entrypoint(uint16_t fw_version_arg) {
   install_fself_hooks();
   install_fpkg_hooks();
   install_patches();
+  install_testkit_activation();
 
   return 0;
 }

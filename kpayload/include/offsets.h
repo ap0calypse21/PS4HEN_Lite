@@ -139,6 +139,12 @@ struct kpayload_offsets {
   // Process structure offsets
   uint32_t proc_p_comm_offset;
   uint32_t proc_path_offset;
+
+  // Testkit fake activation (from GoldHEN RE)
+  uint32_t testkit_check_func_addr;
+  uint32_t testkit_activate_func_addr;
+  uint32_t testkit_patch1_addr;
+  uint32_t testkit_patch2_addr;
 };
 
 // clang-format on
