@@ -8,6 +8,7 @@
 #include "sparse.h"
 
 extern uint16_t fw_version PAYLOAD_BSS;
+extern uint8_t is_testkit PAYLOAD_BSS;
 
 extern int (*proc_rwmem)(struct proc *p, struct uio *uio) PAYLOAD_BSS;
 extern struct vmspace *(*vmspace_acquire_ref)(struct proc *p)PAYLOAD_BSS;
@@ -159,6 +160,10 @@ PAYLOAD_CODE static inline int proc_write_mem(struct proc *p, void *ptr, size_t 
 }
 
 PAYLOAD_CODE int shellcore_patch(void) {
+  if (is_testkit) {
+    return 0;
+  }
+
   uint8_t *text_seg_base = NULL;
   size_t n;
 

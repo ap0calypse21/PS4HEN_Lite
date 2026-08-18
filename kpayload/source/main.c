@@ -15,6 +15,7 @@
 
 uint16_t fw_version PAYLOAD_BSS = 0;
 const struct kpayload_offsets *fw_offsets PAYLOAD_BSS = NULL;
+uint8_t is_testkit PAYLOAD_BSS = 0;
 
 int (*memcmp)(const void *ptr1, const void *ptr2, size_t num) PAYLOAD_BSS;
 int (*_sx_xlock)(struct sx *sx, int opts, const char *file, int line) PAYLOAD_BSS;
@@ -164,6 +165,8 @@ PAYLOAD_CODE static void install_testkit_activation() {
   if (!testkit_check()) {
     return; // retail unit, skip testkit activation
   }
+
+  is_testkit = 1;
 
   // testkit detected — apply fake activation patches
   uint64_t flags = intr_disable();
